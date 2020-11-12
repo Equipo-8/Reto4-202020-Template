@@ -58,17 +58,20 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de buses de singapur")
-    print("3- Calcular componentes conectados")
-    print("4- Establecer estación base:")
-    print("5- Hay camino entre estacion base y estación: ")
-    print("6- Ruta de costo mínimo desde la estación base y estación: ")
-    print("7- Estación que sirve a mas rutas: ")
+    print("3- Calcular componentes conectados ")
+    print("4- Determinar si existe una ruta circular")
+    print("5- Hallar las estaciones criticas ")
+    print("6- Ruta turistica por resistencia ")
+    print("7- Recomendador de rutas por rango de edad ")
+    print("8- Ruta de interes turistico ")
+    print("9- Identificacion de estaciones para publicidad ")
+    print("10- Identificacion de bicicletas para mantenimiento ")
     print("0- Salir")
     print("*******************************************")
 
 
 def optionTwo():
-    print("\nCargando información de transporte de singapur ....")
+    print("\nCargando información de rutas de bicicletas en NY ....")
     controller.loadServices(cont, servicefile)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
@@ -85,18 +88,18 @@ def optionThree():
 
 
 def optionFour():
-    controller.minimumCostPaths(cont, initialStation)
+    xx= controller.ExistCircularPath(cont, idstart, range_time)
+    print(xx)
 
 
 def optionFive():
-    haspath = controller.hasPath(cont, destStation)
-    print('Hay camino entre la estación base : ' +
-          'y la estación: ' + destStation + ': ')
+    haspath = controller.getCriticalStations(cont, destStation)
+    print('Las estaciones criticas son las siguientes : ')
     print(haspath)
 
 
 def optionSix():
-    path = controller.minimumCostPath(cont, destStation)
+    path = controller.HowMuchYouCanRide(cont, destStation)
     if path is not None:
         pathlen = stack.size(path)
         print('El camino es de longitud: ' + str(pathlen))
@@ -108,11 +111,26 @@ def optionSix():
 
 
 def optionSeven():
-    maxvert, maxdeg = controller.servedRoutes(cont)
+    maxvert, maxdeg = controller.recomendPaths(cont)
     print('Estación: ' + maxvert + '  Total rutas servidas: '
           + str(maxdeg))
 
+def optionEight():
+    woow= controller.amazingPlace(cont)
 
+    print(woow)
+
+
+def optionNine():
+    woow= controller.identifyforpublicity(cont)
+
+    print(woow)
+
+
+def optionTen():
+    woow= controller.identifybikesformaintenance(cont)
+
+    print(woow)
 """
 Menu principal
 """
@@ -134,8 +152,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
-        msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
-        initialStation = input(msg)
+        idstart= input('Ingrese el identificador de la estacion de inicio :')
+        range_time= input('Ingrese el rango de tiempo disponible en minutos (Ej: 120-180) ')
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -152,6 +170,19 @@ while True:
     elif int(inputs[0]) == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 8:
+        executiontime = timeit.timeit(optionEight, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 9:
+        executiontime = timeit.timeit(optionNine, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    
+    elif int(inputs[0]) == 10:
+        executiontime = timeit.timeit(optionTen, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
 
     else:
         sys.exit(0)
