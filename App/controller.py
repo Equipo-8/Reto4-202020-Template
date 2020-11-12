@@ -39,12 +39,34 @@ recae sobre el controlador.
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
-
+def init():
+    citibike = model.newAnalizer()
+    return citibike
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
+
+def loadTrips(citibike):
+    for filename in cf.os.listdir(cf.data_dir):
+        if filename.endswith('.csv'):
+            print('Cargando archivo: ' + filename)
+            loadFile(citibike, filename)
+    return citibike
+
+def loadFile(citibike, tripfile):
+    """
+    """
+    tripfile = cf.data_dir + tripfile
+    input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
+                                delimiter=",")
+    for trip in input_file:
+        model.addTrip(citibike, trip)
+    return citibike
+
+
+
 
 # ___________________________________________________
 #  Funciones para consultas
