@@ -23,6 +23,7 @@
  * Dario Correal
  *
  """
+import os
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
@@ -74,6 +75,7 @@ def newAnalyzer():
 
 
 # Funciones para agregar informacion al grafo
+
 def addTrip(citibike, trip):
     try:
         origin=trip['start station id']

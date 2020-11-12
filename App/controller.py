@@ -40,14 +40,20 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 def init():
-    analyzer = model.newAnalizer()
-    return analizer
+    citibike = model.newAnalizer()
+    return citibike
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
 
+def loadTrips(citibike):
+    for filename in cf.os.listdir(cf.data_dir):
+        if filename.endswith('.csv'):
+            print('Cargando archivo: ' + filename)
+            loadFile(citibike, filename)
+    return citibike
 
 def loadFile(citibike, tripfile):
     """
