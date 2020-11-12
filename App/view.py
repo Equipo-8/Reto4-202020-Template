@@ -57,7 +57,7 @@ def printMenu():
     print("*******************************************")
     print("Bienvenido")
     print("1- Inicializar Analizador")
-    print("2- Cargar información de buses de singapur")
+    print("2- Cargar información de citibike")
     print("3- Calcular componentes conectados ")
     print("4- Determinar si existe una ruta circular")
     print("5- Hallar las estaciones criticas ")
@@ -72,7 +72,7 @@ def printMenu():
 
 def optionTwo():
     print("\nCargando información de rutas de bicicletas en NY ....")
-    controller.loadServices(cont, servicefile)
+    controller.loadTrips(cont)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
     print('Numero de vertices: ' + str(numvertex))
@@ -84,7 +84,12 @@ def optionTwo():
 
 def optionThree():
     print('El número de componentes conectados es: ' +
-          str(controller.connectedComponents(cont)))
+          str(controller.connectedSCC(cont)))
+    e=controller.searchSCC(cont,id1,id2)
+    if e:
+        print("La estación "+id1+" está fuertemente conectada con la estación "+id2)
+    else:
+        print("Las estaciones no están fuertemente conectadas")
 
 
 def optionFour():
@@ -148,6 +153,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 3:
+        id1=str(input('Ingrese el id de la primera estación: '))
+        id2=str(input('Ingrese el id de la segunda estación: '))
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

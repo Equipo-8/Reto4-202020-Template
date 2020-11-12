@@ -23,7 +23,6 @@
  * Dario Correal
  *
  """
-import os
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
@@ -104,10 +103,88 @@ def addConnection(citibike, origin, destination, duration):
         gr.addEdge(citibike['connections'], origin, destination, duration)
     return citibike
 
+def numSCC(graph,sc):
+    sc = scc.KosarajuSCC(graph)
+    return scc.connectedComponents(sc)
+def sameCC(sc, station1, station2):
+    sc = scc.KosarajuSCC(sc['connections'])
+    return scc.stronglyConnected(sc, station1, station2)
+
 
 # ==============================
 # Funciones de consulta
 # ==============================
+def connectedComponents(analyzer):
+    """
+    Calcula los componentes conectados del grafo
+    Se utiliza el algoritmo de Kosaraju
+    """
+    analyzer['components'] = scc.KosarajuSCC(analyzer['connections'])
+    return scc.connectedComponents(analyzer['components'])
+
+
+def minimumCostPaths(analyzer, initialStation):
+    """
+    Calcula los caminos de costo mínimo desde la estacion initialStation
+    a todos los demas vertices del grafo
+    """
+    analyzer['paths'] = djk.Dijkstra(analyzer['connections'], initialStation)
+    return analyzer
+
+
+def hasPath(analyzer, destStation):
+    """
+    Indica si existe un camino desde la estacion inicial a la estación destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    return djk.hasPathTo(analyzer['paths'], destStation)
+
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo entre la estacion de inicio
+    y la estacion destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    path = djk.pathTo(analyzer['paths'], destStation)
+    return path
+
+
+def totalStops(analyzer):
+    """
+    Retorna el total de estaciones (vertices) del grafo
+    """
+    return gr.numVertices(analyzer['connections'])
+
+
+def totalConnections(analyzer):
+    """
+    Retorna el total arcos del grafo
+    """
+    return gr.numEdges(analyzer['connections'])
+
+
+def servedRoutes(analyzer):
+    """
+    Retorna la estación que sirve a mas rutas.
+    Si existen varias rutas con el mismo numero se
+    retorna una de ellas
+    """
+    lstvert = m.keySet(analyzer['stops'])
+    itlstvert = it.newIterator(lstvert)
+    maxvert = None
+    maxdeg = 0
+    while(it.hasNext(itlstvert)):
+        vert = it.next(itlstvert)
+        lstroutes = m.get(analyzer['stops'], vert)['value']
+        degree = lt.size(lstroutes)
+        if(degree > maxdeg):
+            maxvert = vert
+            maxdeg = degree
+    return maxvert, maxdeg
+
+
+
 
 # ==============================
 # Funciones Helper
