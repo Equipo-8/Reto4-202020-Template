@@ -93,8 +93,9 @@ def optionThree():
 
 
 def optionFour():
-    xx= controller.ExistCircularPath(cont, idstart, range_time)
-    print(xx)
+    asd = controller.sccGraph(cont)
+    print(asd)
+
 
 
 def optionFive():

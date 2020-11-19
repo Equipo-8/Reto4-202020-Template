@@ -109,6 +109,23 @@ def numSCC(graph,sc):
 def sameCC(sc, station1, station2):
     sc = scc.KosarajuSCC(sc['connections'])
     return scc.stronglyConnected(sc, station1, station2)
+def rutacircular(graph):
+    sc = scc.KosarajuSCC(graph)
+    listakeys=m.keySet(sc['idscc'])
+    iterador=it.newIterator(listakeys)
+    diccionarioconteito={}
+    while it.hasNext(iterador):
+        key=it.next(iterador)
+        e=m.get(sc['idscc'], key)
+        if e['value'] != None:
+            lt=diccionarioconteito.get(e['value'],[])
+            lt.append(key)
+            diccionarioconteito[e['value']]=lt
+    dictpekenho={}
+    for each in diccionarioconteito:
+        if len(diccionarioconteito[each])>1:
+            dictpekenho[each]=diccionarioconteito[each]
+    return dictpekenho
 
 
 # ==============================
@@ -199,6 +216,8 @@ def compareStopIds(stop, keyvaluestop):
     Compara dos estaciones
     """
     stopcode = keyvaluestop['key']
+    stop=int(stop)
+    stopcode=int(stopcode)
     if (stop == stopcode):
         return 0
     elif (stop > stopcode):
