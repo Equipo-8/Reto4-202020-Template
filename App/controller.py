@@ -136,3 +136,5 @@ def recomendadorRutas(graph,limit,limit2):
     return model.recomendadorRutas(graph,limit,limit2)
 def identifybikesformaintenance(cont,identificador,fecha):
     return model.identifybikesformaintenance(cont,identificador,fecha)
+def estacionescirticas(citibike,trip):
+    return model.req3(citibike,trip)
