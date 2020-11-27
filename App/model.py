@@ -205,32 +205,100 @@ def servedRoutes(analyzer):
 
 
 def requerimiento_4(analyzer,station,resistance):
-    recorrido= bfs.BreadhtFisrtSearch(analyzer['connections'],station)
-    size= gr.numVertices(analyzer['connections'])
-    vertexxx= gr.vertices(analyzer['connections'])
-    dicc= {}
-    for i in range(1,size):
-        vertice= lt.getElement(vertexxx,i)
-        if bfs.hasPathTo(recorrido,vertice):
-            path= bfs.pathTo(recorrido,vertice)
-            sizep= st.size(path)
-            if sizep != 1 :
-                init= st.pop(path)
-                summ= 0
-                dicc[str(vertice)]= []
-                while sizep >= 2:
-                    vertex2= st.pop(path)
-                    if vertex2 is None :
-                        break
-                    arco= gr.getEdge(analyzer['connections'],init,vertex2)
-                    summ+= arco['weight']
-                    init= vertex2
-                    if summ > resistance :
-                        print(dicc[str(vertice)])
-                        dicc[str(vertice)]= None
-                    else: 
-                        dicc[str(vertice)].append(arco)
-    return dicc 
+
+    try:
+        recorrido= bfs.BreadhtFisrtSearch(analyzer['connections'],station)
+        size= gr.numVertices(analyzer['connections'])
+        vertexxx= gr.vertices(analyzer['connections'])
+        dicc= {}
+        for i in range(1,size):
+            vertice= lt.getElement(vertexxx,i)
+            if bfs.hasPathTo(recorrido,vertice):
+                path= bfs.pathTo(recorrido,vertice)
+                print(path)
+            
+                sizep= st.size(path)
+                if sizep != 1 :
+                    init= st.pop(path)
+                    summ= 0
+                    dicc[str(vertice)]= []
+                    while sizep >= 2:
+                        vertex2= st.pop(path)
+                        if vertex2 is None :
+                            break
+                        arco= gr.getEdge(analyzer['connections'],init,vertex2)
+                        summ+= arco['weight']
+                        init= vertex2
+                        if summ > resistance :
+                            dicc[str(vertice)]= None
+                        else: 
+                            dicc[str(vertice)].append(arco)
+                break
+        return dicc
+    except Exception as exp:
+        error.reraise(exp, 'model;Req_4')
+
+
+def requerimiento_6(analyzer,la1, lo1, la2, lo2):
+    try:
+        size= gr.numVertices(analyzer['connections'])
+        vertexxx= gr.vertices(analyzer['connections'])
+        min_s= 0 
+        start= ''
+        min_e= 0
+        end= ''
+        for i in range(0,size):
+            vertice= lt.getElement(vertexxx,i)
+            print(vertice)
+            lat= vertice["start station latitude"]
+            lon= vertice["start station longitude"]
+            distance_to_start= get_distance(la1,lo1,lat,lon)
+            distance_to_end= get_distance(la2,lon2,lat,lon)
+            if i == 0 :
+                min_s= distance_to_start
+                start= vertice
+                min_e= distance_to_end
+                end= vertice
+            else:
+                if distance_to_start < min_s :
+                    min_s= distance_to_start
+                    start= vertice
+                if distance_to_end < min_e :
+                    min_e= distance_to_end
+                    end= vertice
+        init= start['start station id']
+        des= end['start station id']
+        search= djk.Dijkstra(analyzer['connections'],init)
+        path= djk.pathTo(search,des)
+        time= 0
+        sizep= st.size(path)
+        rutaa= []
+        for i in range(0,sizep):
+            element= st.pop(path)
+            rutaa.append(element)
+        for i in range(0,len(rutaa),2):
+            vertex1= rutaa[i]
+            vertex2= rutaa[i+1]
+            arco= gr.getEdge(analyzer['connections'],vertex1,vertex2)
+            time+= arco['weight']
+        p1='La estacion mas cercana a donde usted se encuentra en este momento es :' + str(init)
+        p2='La estacion mas cercana a su destino es :' + str(des)
+        p3='El camino mas corto entre estas dos estaciones es :'
+        p4='El tiempo estimado para realizar esta ruta es :' + str(time)
+        return p1,p2,p3,rutaa,p4
+    except Exception as exp:
+        error.reraise(exp, 'model;Req_6')
+
+        
+
+                 
+
+
+            
+
+
+
+
 
 
 
@@ -240,7 +308,19 @@ def requerimiento_4(analyzer,station,resistance):
 # ==============================
 # Funciones Helper
 # ==============================
-
+ 
+def get_distance(lat1,lon1,lat2,lon2):
+    R= 6373.0
+    lat1= math.radians(lat1)
+    lat2= math.radians(lat2)
+    lon1= math.radians(lon1)
+    lon2= math.radians(lon2)
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance= R * c
+    return distance
 # ==============================
 # Funciones de Comparacion
 # ==============================

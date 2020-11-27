@@ -120,9 +120,13 @@ def optionSeven():
           + str(maxdeg))
 
 def optionEight():
-    woow= controller.amazingPlace(cont)
-
-    print(woow)
+    woow= controller.requerimiento_6(cont,la1,lo1,la2,lo2)
+    print(woow[0])
+    print(woow[1])
+    print(woow[2])
+    print(woow[3])
+    print(woow[4])
+    print(woow[5])
 
 
 def optionNine():
@@ -179,6 +183,10 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 8:
+        la1= input('Ingrese la latitud de su ubicacion actual : ')
+        lo1= input('Ingrese la longitud de su ubicacion actual : ')
+        la2= input('Ingrese la latitud de su lugar de destino : ')
+        lo2= input('Ingrese la longitud de su lugar de destino : ')
         executiontime = timeit.timeit(optionEight, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
