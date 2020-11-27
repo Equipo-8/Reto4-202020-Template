@@ -107,18 +107,25 @@ def addRankingstart(citibike,vertex,year):
     age=int(now.year)-year
     bigmap=citibike['agestartrank']
     if m.contains(bigmap,vertex):
-        m.put(bigmap,vertex,m.get(bigmap,vertex)['value'][age]=get(age,0)+1)  
+        diccionario=m.get(bigmap,vertex)['value']
+        quantity=diccionario.get(age,0)+1
+        diccionario[age]=quantity
+        m.put(bigmap,vertex,diccionario)  
     else:
-        print("Equis")
         m.put(bigmap,vertex,{age:1})    
+    return citibike
 def addRankingfinish(citibike,vertex,year):
     now=datetime.datetime.now()
     age=int(now.year)-year
     bigmap=citibike['agefinishrank']
     if m.contains(bigmap,vertex):
-        m.put(bigmap,vertex,m.get(bigmap,vertex)['value'][age]=get(age,0)+1)    
+        diccionario=m.get(bigmap,vertex)['value']
+        quantity=diccionario.get(age,0)+1
+        diccionario[age]=quantity
+        m.put(bigmap,vertex,diccionario)  
     else:
-        m.put(bigmap,vertex,{age:1})    
+        m.put(bigmap,vertex,{age:1})   
+    return citibike 
 
 def addStation(citibike, stationid):
     """
@@ -169,7 +176,39 @@ def req2(grafo,limiteinf,limite,verticei):
         
     return rutasposibles
 
-
+def recomendadorRutas(analizador,limiteinf,limitesup):
+    listvertices=gr.vertices(analizador['connections'])
+    iterator=it.newIterator(listvertices)
+    mostsalida=[None,0]
+    mostllegada=[None,0]
+    ruta=[]
+    while it.hasNext(iterator):
+        verticerevisado=it.next(iterator)
+        ctotal=0
+        ctotal2=0
+        for age in range(limiteinf,limitesup+1):
+            if m.contains(analizador['agestartrank'],verticerevisado):
+                diccionario=m.get(analizador['agestartrank'],verticerevisado)['value']
+                cantidad=diccionario.get(age,0)
+                ctotal+=cantidad
+            if m.contains(analizador['agefinishrank'],verticerevisado):
+                diccionario2=m.get(analizador['agefinishrank'],verticerevisado)['value']
+                cantidad2=diccionario2.get(age,0)
+                ctotal2+=cantidad2
+        if ctotal>mostsalida[1]:
+            mostsalida[1]=ctotal
+            mostsalida[0]=verticerevisado
+        if ctotal2>mostllegada[1]:
+            mostllegada[1]=ctotal2
+            mostllegada[0]=verticerevisado
+    if mostsalida[0] != mostllegada[0]:
+        search=djk.Dijkstra(analizador['connections'],mostsalida[0])
+        resultado=djk.pathTo(search,mostllegada[0])
+        iterator=it.newIterator(resultado)
+        while it.hasNext(iterator):
+            informacion=it.next(iterator)
+            ruta.append({'Desde':informacion['vertexA'],'Hasta':informacion['vertexB'],'Duracion':informacion['weight']/60})
+    return ruta
 
 # ==============================
 # Funciones de consulta
