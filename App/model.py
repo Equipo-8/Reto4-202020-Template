@@ -28,7 +28,10 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
+from DISClib.ADT import stack
+from DISClib.DataStructures import graphstructure as gs
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dfs
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 assert config
@@ -73,16 +76,16 @@ def newAnalyzer():
 
 
 
-# Funciones para agregar informacion al grafo
 
 def addTrip(citibike, trip):
     try:
         origin=trip['start station id']
         destination = trip['end station id']
         duration = int(trip['tripduration'])
-        addStation(citibike, origin)
-        addStation(citibike, destination)
-        addConnection(citibike, origin, destination, duration)
+        if not (origin==destination):
+            addStation(citibike, origin)
+            addStation(citibike, destination)
+            addConnection(citibike, origin, destination, duration)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
 
@@ -109,23 +112,69 @@ def numSCC(graph,sc):
 def sameCC(sc, station1, station2):
     sc = scc.KosarajuSCC(sc['connections'])
     return scc.stronglyConnected(sc, station1, station2)
-def rutacircular(graph):
+def rutacircular(graph,limite,verticestart):
+    rutas=lt.newList()
+    buskeda=dfs.DepthFirstSearch(graph,verticestart)
     sc = scc.KosarajuSCC(graph)
-    listakeys=m.keySet(sc['idscc'])
-    iterador=it.newIterator(listakeys)
-    diccionarioconteito={}
-    while it.hasNext(iterador):
-        key=it.next(iterador)
-        e=m.get(sc['idscc'], key)
-        if e['value'] != None:
-            lt=diccionarioconteito.get(e['value'],[])
-            lt.append(key)
-            diccionarioconteito[e['value']]=lt
-    dictpekenho={}
-    for each in diccionarioconteito:
-        if len(diccionarioconteito[each])>1:
-            dictpekenho[each]=diccionarioconteito[each]
-    return dictpekenho
+    componente_inicio=m.get(sc['idscc'],verticestart)
+    iterator=it.newIterator(m.keySet(sc['idscc']))
+    verticesfuertementeconec=lt.newList(cmpfunction=compareStopIds)
+    while it.hasNext(iterator):
+        proximo=it.next(iterator)
+        c_proximo=m.get(sc['idscc'],proximo)
+        if c_proximo == componente_inicio and proximo != verticestart: #Que el componente sea el mismo, y que a su vez sea diferente al vértice de inicio
+            lt.addLast(verticesfuertementeconec, proximo)
+    iterator=newIterator(verticesfuertementeconec)
+    validadora=lt.newList(cmpfunction=compareroutes)
+    while it.hasNext(iterator):
+        rutanueva=it.next(iterator)
+        busquedaruta=dfs.DepthFirstSearch(graph,rutanueva)
+        path=dfs.pathTo(buskeda,rutanueva)
+        path_or=dfs.pathTo(busquedaruta,verticestart)
+        size=st.size(path)
+        sizeor=st.size(path_or)
+        timeextra=size*1200 #1200 segundos -> 20 mins
+        timeextra2=(sizeor-1)*1200
+        timefull=timeextra+timeextra2
+        infoarc={'time':timefull,
+                'i':0,
+                'path':{}}
+        if timefull<limite:
+            info,info=construirRuta(graph,path,infoarc),construirRuta(graph,path_or,infoarc)
+            info['Ending']=info['path'][info['i']-1]
+        time=info['time']
+        if time<=limit:
+            info['path']=buildCadena(info)
+            if lt.isPresent(validadora,info['path']) == 0:
+                lt.addLast(rutas,info)
+                lt.addLast(validador,info['path'])
+    return rutas
+
+def req2(grafo,limiteinf,limite,verticei):
+    sc = scc.KosarajuSCC(grafo)
+    componente_inicio=m.get(sc['idscc'],verticei)['value']
+    iterator=it.newIterator(m.keySet(sc['idscc']))
+    verticesfc=lt.newList(cmpfunction=compareroutes)
+    while it.hasNext(iterator):
+        proximo=it.next(iterator)
+        c_proximo=m.get(sc['idscc'],proximo)['value']
+        if c_proximo == componente_inicio: #Que el componente sea el mismo, y que a su vez sea diferente al vértice de inicio
+            lt.addLast(verticesfc,proximo)
+    adyacentes=gr.adjacents(grafo,verticei)
+    iterator=it.newIterator(verticesfc)
+    rutasposibles=[]
+    while it.hasNext(iterator):
+        proximo=it.next(iterator)
+        if lt.isPresent(adyacentes,proximo):
+            dfs3 = dfs.DepthFirstSearchSCC(grafo,proximo,verticesfc)
+            if dfs.pathTowithLimiter(dfs3,verticei,grafo,limite) != None:
+                rutachikita,tiempo=dfs.pathTowithLimiter(dfs3,verticei,grafo,limite)
+                lt.removeLast(rutachikita)
+                if limiteinf<tiempo<limite:
+                    rutasposibles.append({"First":lt.firstElement(rutachikita),"Last":lt.lastElement(rutachikita),"Duracion":tiempo/60})
+        
+    return rutasposibles
+
 
 
 # ==============================

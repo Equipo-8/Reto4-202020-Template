@@ -281,11 +281,10 @@ def getEdge(graph, vertexa, vertexb):
         itvertex = it.newIterator(lst)
         while (it.hasNext(itvertex)):
             edge = it.next(itvertex)
-            if (e.either(edge) == vertexa or
-               (e.other(edge, e.either(edge)) == vertexa)):
-                if (e.either(edge) == vertexb or
-                   (e.other(edge, e.either(edge)) == vertexb)):
-                    return edge
+            if (e.either(edge) == vertexa) and (e.other(edge, e.either(edge)) == vertexb):
+                return edge
+            elif (not graph['directed']) and (e.either(edge) == vertexb) and (e.other(edge, e.either(edge)) == vertexa):
+                return edge
         return None
     except Exception as exp:
         error.reraise(exp, 'ajlist:getedge')
@@ -346,6 +345,16 @@ def addEdge(graph, vertexa, vertexb, weight=0):
     except Exception as exp:
         error.reraise(exp, 'ajlist:addedge')
 
+def compareroutes(route1, route2):
+    """
+    Compara dos rutas
+    """
+    if (route1 == route2):
+        return 0
+    elif (route1 > route2):
+        return 1
+    else:
+        return -1
 
 def adjacents(graph, vertex):
     """
@@ -363,7 +372,7 @@ def adjacents(graph, vertex):
     try:
         element = map.get(graph['vertices'], vertex)
         lst = element['value']
-        lstresp = lt.newList()
+        lstresp = lt.newList(cmpfunction=compareroutes)
         iter = it.newIterator(lst)
         while (it.hasNext(iter)):
             edge = it.next(iter)

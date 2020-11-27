@@ -93,8 +93,17 @@ def optionThree():
 
 
 def optionFour():
-    asd = controller.sccGraph(cont)
-    print(asd)
+    asd = controller.sccGraph(cont,range_time,range_time2,idstart)
+    if len(asd)>0:
+        for each in asd:
+            print("\n")
+            print("Resultados: \n")
+            print("La primera estación que debes tomar después de la estación "+idstart+" es: "+each['First'])
+            print("La última estación a la cuál debes llegar es "+each['Last'])
+            print("Esta opción de ruta durará: "+str(round(each['Duracion'],2))+" minutos")
+            print("\n")
+    else:
+        print("No existen recomendaciones con los parámetros brindados")
 
 
 
@@ -161,7 +170,8 @@ while True:
 
     elif int(inputs[0]) == 4:
         idstart= input('Ingrese el identificador de la estacion de inicio :')
-        range_time= input('Ingrese el rango de tiempo disponible en minutos (Ej: 120-180) ')
+        range_time= int(input('Ingresa el límite inferior de tu disponibilidad de tiempo: '))
+        range_time2= int(input('Ingresa el límite superior de tu disponibilidad de tiempo: '))
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

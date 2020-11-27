@@ -128,5 +128,5 @@ def connectedSCC(analyzer):
     return model.numSCC(analyzer['connections'],analyzer) 
 def searchSCC(analyzer,st1,st2):
     return model.sameCC(analyzer, st1, st2)
-def sccGraph(graph):
-    return model.rutacircular(graph['connections'])
+def sccGraph(graph,limit,limit2,vertex):
+    return model.req2(graph['connections'],limit*60,limit2*60,vertex)
