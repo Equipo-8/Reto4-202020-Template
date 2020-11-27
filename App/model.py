@@ -24,6 +24,7 @@
  *
  """
 import config
+import datetime
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
@@ -55,6 +56,8 @@ def newAnalyzer():
     """
     try:
         analyzer = {
+                    'agestartrank': None,
+                    'agefinishrank': None,
                     'stops': None,
                     'connections': None,
                     'components': None,
@@ -62,6 +65,14 @@ def newAnalyzer():
                     }
 
         analyzer['stops'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+
+        analyzer['agestartrank'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+
+        analyzer['agefinishrank'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
@@ -82,12 +93,32 @@ def addTrip(citibike, trip):
         origin=trip['start station id']
         destination = trip['end station id']
         duration = int(trip['tripduration'])
+        year=int(trip['birth year'])
         if not (origin==destination):
             addStation(citibike, origin)
             addStation(citibike, destination)
+            addRankingstart(citibike,origin,year)
+            addRankingfinish(citibike,destination,year)
             addConnection(citibike, origin, destination, duration)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
+def addRankingstart(citibike,vertex,year):
+    now=datetime.datetime.now()
+    age=int(now.year)-year
+    bigmap=citibike['agestartrank']
+    if m.contains(bigmap,vertex):
+        m.put(bigmap,vertex,m.get(bigmap,vertex)['value'][age]=get(age,0)+1)  
+    else:
+        print("Equis")
+        m.put(bigmap,vertex,{age:1})    
+def addRankingfinish(citibike,vertex,year):
+    now=datetime.datetime.now()
+    age=int(now.year)-year
+    bigmap=citibike['agefinishrank']
+    if m.contains(bigmap,vertex):
+        m.put(bigmap,vertex,m.get(bigmap,vertex)['value'][age]=get(age,0)+1)    
+    else:
+        m.put(bigmap,vertex,{age:1})    
 
 def addStation(citibike, stationid):
     """
@@ -112,43 +143,6 @@ def numSCC(graph,sc):
 def sameCC(sc, station1, station2):
     sc = scc.KosarajuSCC(sc['connections'])
     return scc.stronglyConnected(sc, station1, station2)
-def rutacircular(graph,limite,verticestart):
-    rutas=lt.newList()
-    buskeda=dfs.DepthFirstSearch(graph,verticestart)
-    sc = scc.KosarajuSCC(graph)
-    componente_inicio=m.get(sc['idscc'],verticestart)
-    iterator=it.newIterator(m.keySet(sc['idscc']))
-    verticesfuertementeconec=lt.newList(cmpfunction=compareStopIds)
-    while it.hasNext(iterator):
-        proximo=it.next(iterator)
-        c_proximo=m.get(sc['idscc'],proximo)
-        if c_proximo == componente_inicio and proximo != verticestart: #Que el componente sea el mismo, y que a su vez sea diferente al vértice de inicio
-            lt.addLast(verticesfuertementeconec, proximo)
-    iterator=newIterator(verticesfuertementeconec)
-    validadora=lt.newList(cmpfunction=compareroutes)
-    while it.hasNext(iterator):
-        rutanueva=it.next(iterator)
-        busquedaruta=dfs.DepthFirstSearch(graph,rutanueva)
-        path=dfs.pathTo(buskeda,rutanueva)
-        path_or=dfs.pathTo(busquedaruta,verticestart)
-        size=st.size(path)
-        sizeor=st.size(path_or)
-        timeextra=size*1200 #1200 segundos -> 20 mins
-        timeextra2=(sizeor-1)*1200
-        timefull=timeextra+timeextra2
-        infoarc={'time':timefull,
-                'i':0,
-                'path':{}}
-        if timefull<limite:
-            info,info=construirRuta(graph,path,infoarc),construirRuta(graph,path_or,infoarc)
-            info['Ending']=info['path'][info['i']-1]
-        time=info['time']
-        if time<=limit:
-            info['path']=buildCadena(info)
-            if lt.isPresent(validadora,info['path']) == 0:
-                lt.addLast(rutas,info)
-                lt.addLast(validador,info['path'])
-    return rutas
 
 def req2(grafo,limiteinf,limite,verticei):
     sc = scc.KosarajuSCC(grafo)
@@ -158,7 +152,7 @@ def req2(grafo,limiteinf,limite,verticei):
     while it.hasNext(iterator):
         proximo=it.next(iterator)
         c_proximo=m.get(sc['idscc'],proximo)['value']
-        if c_proximo == componente_inicio: #Que el componente sea el mismo, y que a su vez sea diferente al vértice de inicio
+        if c_proximo == componente_inicio: #Que el componente sea el mismo
             lt.addLast(verticesfc,proximo)
     adyacentes=gr.adjacents(grafo,verticei)
     iterator=it.newIterator(verticesfc)
