@@ -117,6 +117,19 @@ def addnametrip(citybike,viaje,name):
 
 
 
+def addBikeID(citibike, identificador, fecha, hora, desde, hasta):
+    """
+    Crea '
+    """
+    if m.contains(citibike['bikehistorial'],fecha):
+        hashmin=m.get(citibike['bikehistorial'],fecha)['value']
+        hashmin.put(fecha,(desde,hasta))
+        citibike['bikehistorial'].put(identificador,hashmin)
+    else:
+        hashmin=m.newMap(numelements=10000,maptype='PROBING',comparefunction=compareStopIds)
+        hashmin.put(fecha,(desde,hasta))
+        citibike['bikehistorial'].put(identificador,hashmin)
+    return citibike
 
 def addRankingstart(citibike,vertex,year):
     now=datetime.datetime.now()
