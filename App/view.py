@@ -151,7 +151,7 @@ def optionNine():
 
 
 def optionTen():
-    woow= controller.identifybikesformaintenance(cont)
+    woow=controller.identifybikesformaintenance(cont,identificador,fecha)
 
     print(woow)
 """
@@ -209,6 +209,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
     
     elif int(inputs[0]) == 10:
+        identificador= int(input('Ingresa el límite inferior de tu edad: '))
+        fecha= input('Ingresa el límite superior de tu edad: ')
         executiontime = timeit.timeit(optionTen, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

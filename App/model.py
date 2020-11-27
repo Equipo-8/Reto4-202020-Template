@@ -56,6 +56,7 @@ def newAnalyzer():
     """
     try:
         analyzer = {
+                    'bikehistorial': None,
                     'agestartrank': None,
                     'agefinishrank': None,
                     'stops': None,
@@ -69,6 +70,10 @@ def newAnalyzer():
                                      comparefunction=compareStopIds)
 
         analyzer['agestartrank'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+
+        analyzer['bikehistorial'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
@@ -94,6 +99,10 @@ def addTrip(citibike, trip):
         destination = trip['end station id']
         duration = int(trip['tripduration'])
         year=int(trip['birth year'])
+        bikeid=int(trip['birth year'])
+        date=datetime.datetime.strptime(trip['starttime'], '%Y-%m-%d %H:%M:%S.%f')
+        fecha=date.date()
+        hora=date.time()
         if not (origin==destination):
             addStation(citibike, origin)
             addStation(citibike, destination)
@@ -102,6 +111,17 @@ def addTrip(citibike, trip):
             addConnection(citibike, origin, destination, duration)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
+def addBikeID(citibike, identificador, fecha, hora, desde, hasta):
+    if m.contains(citibike['bikehistorial'],fecha):
+        hashmin=m.get(citibike['bikehistorial'],fecha)['value']
+        hashmin.put(fecha,(desde,hasta))
+        citibike['bikehistorial'].put(identificador,hashmin)
+    else:
+        hashmin=m.newMap(numelements=10000,maptype='PROBING',comparefunction=compareStopIds)
+        hashmin.put(fecha,(desde,hasta))
+        citibike['bikehistorial'].put(identificador,hashmin)
+    return citibike
+
 def addRankingstart(citibike,vertex,year):
     now=datetime.datetime.now()
     age=int(now.year)-year
@@ -209,6 +229,9 @@ def recomendadorRutas(analizador,limiteinf,limitesup):
             informacion=it.next(iterator)
             ruta.append({'Desde':informacion['vertexA'],'Hasta':informacion['vertexB'],'Duracion':informacion['weight']/60})
     return ruta
+
+def identifybikesformaintenance(cont,identificador,fecha):
+
 
 # ==============================
 # Funciones de consulta
