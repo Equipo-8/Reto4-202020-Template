@@ -43,7 +43,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-bikefile = '201801-1-citibike-tripdata.csv'
+bikefile = '201801-2-citibike-tripdata.csv'
 initialStation = 0
 
 recursionLimit = 20000
@@ -105,15 +105,13 @@ def optionFive():
 
 
 def optionSix():
-    path = controller.HowMuchYouCanRide(cont, destStation)
-    if path is not None:
-        pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
-        while (not stack.isEmpty(path)):
-            stop = stack.pop(path)
-            print(stop)
-    else:
-        print('No hay camino')
+    path = controller.resistance_paths(cont, station, resistance)
+    print('Los caminos posibles son :')
+    for i in path.keys():
+        if path[i] is not None :
+            print('Hacia '+str(i)+'= ')
+            print(path[i])
+            print('')
 
 
 def optionSeven():
@@ -171,7 +169,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
-        destStation = input("Estación destino (Ej: 15151-10): ")
+        station = input("Estación inicial (Ej: 15151-10): ")
+        resistance = int(input("cuanto aguantas bro???? : "))
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

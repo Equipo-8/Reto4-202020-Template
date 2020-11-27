@@ -130,3 +130,10 @@ def searchSCC(analyzer,st1,st2):
     return model.sameCC(analyzer, st1, st2)
 def sccGraph(graph):
     return model.rutacircular(graph['connections'])
+
+def resistance_paths(analyzer,station,resistance):
+    return model.requerimiento_4(analyzer,station,resistance)
+
+
+for i in range(1,2):
+    print(i)

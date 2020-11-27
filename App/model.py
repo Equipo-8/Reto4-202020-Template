@@ -24,12 +24,15 @@
  *
  """
 import config
+import math 
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
+from DISClib.ADT import stack as st
 from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import bfs
 from DISClib.Utils import error as error
 assert config
 
@@ -201,8 +204,39 @@ def servedRoutes(analyzer):
     return maxvert, maxdeg
 
 
+def requerimiento_4(analyzer,station,resistance):
+    recorrido= bfs.BreadhtFisrtSearch(analyzer['connections'],station)
+    size= gr.numVertices(analyzer['connections'])
+    vertexxx= gr.vertices(analyzer['connections'])
+    dicc= {}
+    for i in range(1,size):
+        vertice= lt.getElement(vertexxx,i)
+        if bfs.hasPathTo(recorrido,vertice):
+            path= bfs.pathTo(recorrido,vertice)
+            sizep= st.size(path)
+            if sizep != 1 :
+                init= st.pop(path)
+                summ= 0
+                dicc[str(vertice)]= []
+                while sizep >= 2:
+                    vertex2= st.pop(path)
+                    if vertex2 is None :
+                        break
+                    arco= gr.getEdge(analyzer['connections'],init,vertex2)
+                    summ+= arco['weight']
+                    init= vertex2
+                    if summ > resistance :
+                        print(dicc[str(vertice)])
+                        dicc[str(vertice)]= None
+                    else: 
+                        dicc[str(vertice)].append(arco)
+    return dicc 
 
 
+
+
+
+        
 # ==============================
 # Funciones Helper
 # ==============================
