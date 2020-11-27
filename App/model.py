@@ -112,6 +112,9 @@ def addTrip(citibike, trip):
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
 def addBikeID(citibike, identificador, fecha, hora, desde, hasta):
+    """
+    Crea '
+    """
     if m.contains(citibike['bikehistorial'],fecha):
         hashmin=m.get(citibike['bikehistorial'],fecha)['value']
         hashmin.put(fecha,(desde,hasta))
