@@ -31,6 +31,7 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import stack as st
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
+from DISClib.DataStructures import arraylist
 from DISClib.ADT import stack as st
 from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import stack
@@ -40,6 +41,7 @@ from DISClib.Algorithms.Graphs import bfs
 from DISClib.Algorithms.Graphs import dfs
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Algorithms.Graphs import bfs
+from DISClib.DataStructures import heap
 from DISClib.Utils import error as error
 assert config
 
@@ -70,29 +72,39 @@ def newAnalyzer():
                     'paths': None,
                     'nameverteces':None,
                     'countllegada':None,
-                    'countsalida':None
+                    'countsalida':None,
+                    'heapsalida':None,
+                    'heapllegada':None,
+                    'heapllegadasalida':None,
+                    'countllegadasalida':None
                     }
 
         analyzer['stops'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-        analyzer['coordinates']= m.newMap(numelements=14000,
+        analyzer['coordinates']= m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-        analyzer['coordinates_destiny']= m.newMap(numelements=14000,
+        analyzer['coordinates_destiny']= m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
-        analyzer['agestartrank'] = m.newMap(numelements=14000,
+        analyzer['agestartrank'] = m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-        analyzer['countllegada'] = m.newMap(numelements=14000,
+        analyzer['countllegada'] = m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-        analyzer['countsalida'] = m.newMap(numelements=14000,
+        analyzer['countllegadasalida'] = m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-        analyzer['agefinishrank'] = m.newMap(numelements=14000,
+        analyzer['countsalida'] = m.newMap(numelements=2000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+        analyzer['heapsalida'] = heap.newHeap(comparadorheap)
+        analyzer['heapllegada'] = heap.newHeap(comparadorheap)
+        analyzer['heapllegadasalida'] = heap.newHeap(comparadorheap)
+        analyzer['agefinishrank'] = m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
@@ -100,7 +112,7 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareStopIds)
-        analyzer['nameverteces'] = m.newMap(numelements=10000,
+        analyzer['nameverteces'] = m.newMap(numelements=2000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds) 
         analyzer['bikeid'] = m.newMap(numelements=1000,
@@ -139,9 +151,35 @@ def addTrip(citibike, trip):
             addConnection(citibike, origin, destination, duration)
             addnametrip(citibike,origin,name)
             addnametrip(citibike,destination,name)
+<<<<<<< Updated upstream
             addBikeID(citibike,identificador,oname,dname,duration,)
+=======
+            countllegada(citibike,origin,destination)
+>>>>>>> Stashed changes
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
+def countllegada(citibike,vertexa,vertexb):
+    llegada=citibike['countllegada']
+    salida=citibike['countsalida']
+    llegadasalida=citibike['countllegadasalida']
+    if not m.contains(llegada,vertexa):
+        m.put(llegada,vertexa,1)
+    else:
+        m.put(llegada,vertexa,m.get(llegada,vertexa)['value']+1)
+    if not m.contains(salida,vertexb):
+        m.put(salida,vertexb,1)
+    else:
+        m.put(salida,vertexb,m.get(salida,vertexb)['value']+1)
+    if not m.contains(llegadasalida,vertexa):
+        m.put(llegadasalida,vertexa,1)
+    else:
+        m.put(llegadasalida,vertexa,m.get(llegadasalida,vertexa)['value']+1)
+    if not m.contains(llegadasalida,vertexb):
+        m.put(llegadasalida,vertexb,1)
+    else:
+        m.put(llegadasalida,vertexb,m.get(llegadasalida,vertexb)['value']+1)
+    return citibike
+
 
 def addCoordinates(citibike,name,origin,latitude,longitude):
     if not m.contains(citibike['coordinates'],origin):
@@ -226,7 +264,8 @@ def sameCC(sc, station1, station2):
     sc = scc.KosarajuSCC(sc['connections'])
     return scc.stronglyConnected(sc, station1, station2)
 
-def req2(grafo,limiteinf,limite,verticei):
+def req2(analizer,limiteinf,limite,verticei):
+    grafo=analizer['connections']
     sc = scc.KosarajuSCC(grafo)
     componente_inicio=m.get(sc['idscc'],verticei)['value']
     iterator=it.newIterator(m.keySet(sc['idscc']))
@@ -247,13 +286,48 @@ def req2(grafo,limiteinf,limite,verticei):
                 rutachikita,tiempo=dfs.pathTowithLimiter(dfs3,verticei,grafo,limite)
                 lt.removeLast(rutachikita)
                 if limiteinf<tiempo<limite:
-                    rutasposibles.append({"First":lt.firstElement(rutachikita),"Last":lt.lastElement(rutachikita),"Duracion":tiempo/60})
+                    rutasposibles.append({"First":m.get(analizer['nameverteces'],lt.firstElement(rutachikita)),"Last":m.get(analizer['nameverteces'],lt.lastElement(rutachikita)),"Duracion":tiempo/60})
         
     return rutasposibles
 
 def req3(analizador):
-    return "XD"
-
+    heapsalida=analizador['heapsalida']
+    print(heapsalida)
+    heapllegada=analizador['heapllegada']
+    heapllegadasalida=analizador['heapllegadasalida']
+    topllegada=[arraylist.getElement(heapsalida['elements'],heapsalida['size']-1),arraylist.getElement(heapsalida['elements'],heapsalida['size']-2),arraylist.getElement(heapsalida['elements'],heapsalida['size']-3)]
+    topsalida=[arraylist.getElement(heapllegada['elements'],heapllegada['size']-1),arraylist.getElement(heapllegada['elements'],heapllegada['size']-2),arraylist.getElement(heapllegada['elements'],heapllegada['size']-3)]
+    lessvisited=heap.min(heapllegadasalida)
+    return topllegada,topsalida,lessvisited
+def generateheap(analizador):
+    heapsalida=analizador['heapsalida']
+    heapllegada=analizador['heapllegada']
+    heapllavesllegada=analizador['heapllegadasalida']
+    llavesllegada=m.keySet(analizador['countllegada']) 
+    llavessalida=m.keySet(analizador['countsalida'])
+    llavessalidallegada=m.keySet(analizador['countllegadasalida'])
+    iterator=it.newIterator(llavesllegada)
+    while it.hasNext(iterator):
+        revisado=m.get(analizador['countllegada'],it.next(iterator))
+        heap.insert(heapllegada,revisado)     
+    iterator=it.newIterator(llavessalida)
+    while it.hasNext(iterator):
+        revisado=m.get(analizador['countsalida'],it.next(iterator))
+        heap.insert(heapsalida,revisado) 
+    iterator=it.newIterator(llavessalidallegada)
+    while it.hasNext(iterator):
+        revisado=m.get(analizador['countllegadasalida'],it.next(iterator))
+        heap.insert(heapllavesllegada,revisado) 
+        
+def comparadorheap(ruta1,ruta2):
+    route1=ruta1['value']
+    route2=ruta2['value']
+    if (route1 == route2):
+        return 0
+    elif (route1 > route2):
+        return 1
+    else:
+        return -1
 def recomendadorRutas(analizador,limiteinf,limitesup):
     listvertices=gr.vertices(analizador['connections'])
     iterator=it.newIterator(listvertices)
@@ -357,7 +431,7 @@ def bonito(analyzer,bikeid):
 def poner_bonita_la_ruta(analyzer,arco):
     vertexA= m.get(analyzer['coordinates'],arco['vertexA'])['value']['name']
     vertexB= m.get(analyzer['coordinates_destiny'],arco['vertexB'])['value']['name']
-    hola= {'From':vertexA,'To':vertexB,'duracion en minutos':arco['weight']}
+    hola= {'From':vertexA,'To':vertexB,'duracion en minutos':arco['weight']/60}
     return hola
 
 

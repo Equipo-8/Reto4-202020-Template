@@ -108,7 +108,8 @@ def optionFour():
 
 
 def optionFive():
-    papu=":v?"
+    execution=controller.estacionescirticas(cont)
+    print(execution)
 
 
 def optionSix():

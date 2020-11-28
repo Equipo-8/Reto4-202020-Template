@@ -63,6 +63,7 @@ def loadFile(citibike, tripfile):
                                 delimiter=",")
     for trip in input_file:
         model.addTrip(citibike, trip)
+    model.generateheap(citibike)
     return citibike
 
 
@@ -135,8 +136,14 @@ def resistance_paths(analyzer,station,resistance):
 def requerimiento_6(analyzer,la1,lo1,la2,lo2):
     return model.requerimiento_6(analyzer,la1,lo1,la2,lo2)
 
+<<<<<<< Updated upstream
 def bonito(analyzer,id):
     return model.bonito(analyzer,id)
+=======
+
+def sccGraph(graph,limit,limit2,vertex):
+    return model.req2(graph,limit*60,limit2*60,vertex)
+>>>>>>> Stashed changes
 
 def recomendadorRutas(graph,limit,limit2):
     return model.recomendadorRutas(graph,limit,limit2)
@@ -145,5 +152,5 @@ def recomendadorRutas(graph,limit,limit2):
 def identifybikesformaintenance(cont,identificador,fecha):
     return model.identifybikesformaintenance(cont,identificador,fecha)
     
-def estacionescirticas(citibike,trip):
-    return model.req3(citibike,trip)
+def estacionescirticas(citibike):
+    return model.req3(citibike)
