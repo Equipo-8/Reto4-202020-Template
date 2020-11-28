@@ -107,7 +107,8 @@ def optionFour():
 
 
 def optionFive():
-    papu=":v?"
+    execution=controller.estacionescirticas(cont)
+    print(execution)
 
 
 def optionSix():
@@ -184,8 +185,6 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
-        range_agdde= int(input('Ingresa el límite inferior de tu edad: '))
-        range_agdde2= int(input('Ingresa el límite superior de tu edad: '))
         executiontime = timeit.timeit(optionFive, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
