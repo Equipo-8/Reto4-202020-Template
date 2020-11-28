@@ -154,7 +154,6 @@ def addTrip(citibike, trip):
             addnametrip(citibike,origin,name)
             addnametrip(citibike,destination,name)
             addBikeID(citibike,identificador,oname,dname,duration,start,end)
-            addBikeID(citibike,identificador,oname,dname,duration,)
             countllegada(citibike,origin,destination)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
