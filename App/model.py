@@ -151,11 +151,8 @@ def addTrip(citibike, trip):
             addConnection(citibike, origin, destination, duration)
             addnametrip(citibike,origin,name)
             addnametrip(citibike,destination,name)
-<<<<<<< Updated upstream
             addBikeID(citibike,identificador,oname,dname,duration,)
-=======
             countllegada(citibike,origin,destination)
->>>>>>> Stashed changes
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
 def countllegada(citibike,vertexa,vertexb):
@@ -286,7 +283,7 @@ def req2(analizer,limiteinf,limite,verticei):
                 rutachikita,tiempo=dfs.pathTowithLimiter(dfs3,verticei,grafo,limite)
                 lt.removeLast(rutachikita)
                 if limiteinf<tiempo<limite:
-                    rutasposibles.append({"First":m.get(analizer['nameverteces'],lt.firstElement(rutachikita)),"Last":m.get(analizer['nameverteces'],lt.lastElement(rutachikita)),"Duracion":tiempo/60})
+                    rutasposibles.append({"First":m.get(analizer['nameverteces'],lt.firstElement(rutachikita))['value'],"Last":m.get(analizer['nameverteces'],lt.lastElement(rutachikita))['value'],"Duracion":tiempo/60})
         
     return rutasposibles
 
@@ -359,7 +356,7 @@ def recomendadorRutas(analizador,limiteinf,limitesup):
         iterator=it.newIterator(resultado)
         while it.hasNext(iterator):
             informacion=it.next(iterator)
-            ruta.append({'Desde':informacion['vertexA'],'Hasta':informacion['vertexB'],'Duracion':informacion['weight']/60})
+            ruta.append({'Desde':m.get(analizador['nameverteces'],informacion['vertexA'])['value'],'Hasta':m.get(analizador['nameverteces'],informacion['vertexB'])['value'],'Duracion':informacion['weight']/60})
     return ruta
 
 def requerimiento_4(analyzer,station,resistance):
@@ -414,7 +411,7 @@ def requerimiento_6(analyzer,la1, lo1, la2, lo2):
             p1='La estacion mas cercana a donde usted se encuentra en este momento es : ' + start[1]
             p2='La estacion mas cercana a su destino es : ' + end[1]
             p3='El camino mas corto entre estas dos estaciones es : '
-            p4='El tiempo estimado para realizar esta ruta es : ' + str(time) + ' minutos'
+            p4='El tiempo estimado para realizar esta ruta es : ' + str(time/60) + ' minutos'
             return p1,p2,p3,rutaa,p4
     except Exception as exp:
         error.reraise(exp, 'model;Req_6')
