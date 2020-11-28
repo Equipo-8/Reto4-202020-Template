@@ -135,8 +135,8 @@ def resistance_paths(analyzer,station,resistance):
 def requerimiento_6(analyzer,la1,lo1,la2,lo2):
     return model.requerimiento_6(analyzer,la1,lo1,la2,lo2)
 
-def bonito(analyzer,id):
-    return model.bonito(analyzer,id)
+def bonito(analyzer,id,fecha):
+    return model.bonito(analyzer,id,fecha)
 
 def sccGraph(graph,limit,limit2,vertex):
     return model.req2(graph,limit*60,limit2*60,vertex)

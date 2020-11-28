@@ -141,6 +141,8 @@ def addTrip(citibike, trip):
         name=trip["start station name"]
         year=int(trip['birth year'])
         identificador= int(trip['bikeid'])
+        start= trip['starttime']
+        end= trip['stoptime']
         if not (origin==destination):
             addStation(citibike, origin)
             addCoordinates(citibike,oname,origin,olatitude,olongitude)
@@ -151,6 +153,7 @@ def addTrip(citibike, trip):
             addConnection(citibike, origin, destination, duration)
             addnametrip(citibike,origin,name)
             addnametrip(citibike,destination,name)
+            addBikeID(citibike,identificador,oname,dname,duration,start,end)
             addBikeID(citibike,identificador,oname,dname,duration,)
             countllegada(citibike,origin,destination)
     except Exception as exp:
@@ -196,19 +199,14 @@ def addnametrip(citybike,viaje,name):
 
 
 
-def addBikeID(citibike, identificador, vertexA , vertexB, weight,):
+def addBikeID(citibike, identificador, vertexA , vertexB, weight,start,end):
     """
     Crea '
     """
     if m.contains(citibike['bikeid'],identificador):        
-        value= m.get(citibike['bikeid'],identificador)['value']
-        if vertexA not in value['vertices']:
-            value['vertices'].append(vertexA)
-        if vertexB not in value['vertices']:
-            value['vertices'].append(vertexB)
-        value['time'] += weight
+        value= m.get(citibike['bikeid'],identificador)['value'].append({'V1':vertexA,'V2':vertexB,'peso':weight,'start':start,'end':end})
     else:
-        value= {'vertices':[vertexA,vertexB],'time':weight,}
+        value= [{'V1':vertexA,'V2':vertexB,'peso':weight,'start':start,'end':end}]
         m.put(citibike['bikeid'],identificador,value)
     return citibike
 
@@ -435,10 +433,21 @@ def requerimiento_6(analyzer,la1, lo1, la2, lo2):
     except Exception as exp:
         error.reraise(exp, 'model;Req_6')
 
-def bonito(analyzer,bikeid):
+def bonito(analyzer,bikeid,fecha_dada):
     try:
+        time_use= 0
+        visitados= []
         data= m.get(analyzer['bikeid'],bikeid)['value']
-        return data['vertices'],data['time']
+        for i in range(0,len(data)):
+            fecha = data[i]['start'].split()
+            if fecha[0] == fecha_dada:
+                time_use+= data[i]['peso']
+                if  data[i]['V1'] not in visitados:
+                    visitados.append(data[i]['V1'])
+                if  data[i]['V2'] not in visitados:
+                    visitados.append(data[i]['V2'])
+        time_no_use = 24*3600 - time_use
+        return visitados,time_use,time_no_use
     except Exception as exp:
         error.reraise(exp, 'model;Fallo en el bono')
 

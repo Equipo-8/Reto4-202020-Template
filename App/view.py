@@ -65,7 +65,6 @@ def printMenu():
     print("7- Recomendador de rutas por rango de edad ")
     print("8- Ruta de interes turistico ")
     print("9- Identificacion de bicicletas para mantenimiento ")
-    print(" ")
     print("0- Salir")
     print("*******************************************")
 
@@ -149,10 +148,11 @@ def optionEight():
 
 
 def optionNine():
-    woow=controller.bonito(cont,identificador)
+    woow=controller.bonito(cont,identificador,fecha)
     print('Las estaciones visitadas por esta bicicleta son : ')
     print(woow[0])
     print('Tiempo total de uso : ' + str(woow[1]//60)+ ' minutos.')
+    print('Tiempo total en desuso : ' + str(woow[2]//60)+ ' minutos.')
 
 
 """
@@ -210,6 +210,7 @@ while True:
 
     elif int(inputs[0]) == 9:
         identificador= int(input('Ingresa el identificador de la bici: '))
+        fecha= input('Ingrese una fecha en el formato "AA-MM-DD" :')
         executiontime = timeit.timeit(optionNine, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
