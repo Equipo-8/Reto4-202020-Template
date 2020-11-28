@@ -288,33 +288,52 @@ def req2(analizer,limiteinf,limite,verticei):
     return rutasposibles
 
 def req3(analizador):
-    heapsalida=analizador['heapsalida']
-    print(heapsalida)
-    heapllegada=analizador['heapllegada']
-    heapllegadasalida=analizador['heapllegadasalida']
-    topllegada=[arraylist.getElement(heapsalida['elements'],heapsalida['size']-1),arraylist.getElement(heapsalida['elements'],heapsalida['size']-2),arraylist.getElement(heapsalida['elements'],heapsalida['size']-3)]
-    topsalida=[arraylist.getElement(heapllegada['elements'],heapllegada['size']-1),arraylist.getElement(heapllegada['elements'],heapllegada['size']-2),arraylist.getElement(heapllegada['elements'],heapllegada['size']-3)]
-    lessvisited=heap.min(heapllegadasalida)
+    llegada,salida,salidallegada=generateheap(analizador)
+    topllegada=[]
+    topsalida=[]
+    lessvisited=[]
+    for x in range(1,4):
+        nombrellegada=m.get(analizador['nameverteces'],llegada[len(llegada)-x]['key'])['value']
+        llegada[len(llegada)-x]['key']=nombrellegada
+        
+        nombresalida=m.get(analizador['nameverteces'],salida[len(salida)-x]['key'])['value']
+        salida[len(salida)-x]['key']=nombresalida
+
+        nombresalidallegada=m.get(analizador['nameverteces'],salidallegada[x]['key'])['value']
+        salidallegada[x]['key']=nombresalidallegada
+
+        topllegada.append(llegada[len(llegada)-x])
+        topsalida.append(salida[len(salida)-x])
+        lessvisited.append(salidallegada[x])
     return topllegada,topsalida,lessvisited
 def generateheap(analizador):
-    heapsalida=analizador['heapsalida']
-    heapllegada=analizador['heapllegada']
-    heapllavesllegada=analizador['heapllegadasalida']
+    
     llavesllegada=m.keySet(analizador['countllegada']) 
+    
     llavessalida=m.keySet(analizador['countsalida'])
+    
     llavessalidallegada=m.keySet(analizador['countllegadasalida'])
+    
     iterator=it.newIterator(llavesllegada)
+
+    llegada=[]
+    salida=[]
+    salidallegada=[]
     while it.hasNext(iterator):
         revisado=m.get(analizador['countllegada'],it.next(iterator))
-        heap.insert(heapllegada,revisado)     
-    iterator=it.newIterator(llavessalida)
-    while it.hasNext(iterator):
-        revisado=m.get(analizador['countsalida'],it.next(iterator))
-        heap.insert(heapsalida,revisado) 
-    iterator=it.newIterator(llavessalidallegada)
-    while it.hasNext(iterator):
-        revisado=m.get(analizador['countllegadasalida'],it.next(iterator))
-        heap.insert(heapllavesllegada,revisado) 
+        llegada.append(revisado)
+    iterator2=it.newIterator(llavessalida)
+    while it.hasNext(iterator2):
+        revisado=m.get(analizador['countsalida'],it.next(iterator2))
+        salida.append(revisado)
+    iterator3=it.newIterator(llavessalidallegada)
+    while it.hasNext(iterator3):
+        revisado=m.get(analizador['countllegadasalida'],it.next(iterator3))
+        salidallegada.append(revisado)
+    llegada=sorted(llegada, key = lambda i: i['value'])
+    salida=sorted(salida, key = lambda i: i['value'])
+    salidallegada=sorted(salidallegada, key = lambda i: i['value'])
+    return llegada,salida,salidallegada
         
 def comparadorheap(ruta1,ruta2):
     route1=ruta1['value']
