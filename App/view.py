@@ -64,8 +64,8 @@ def printMenu():
     print("6- Ruta turistica por resistencia ")
     print("7- Recomendador de rutas por rango de edad ")
     print("8- Ruta de interes turistico ")
-    print("9- Identificacion de estaciones para publicidad ")
-    print("10- Identificacion de bicicletas para mantenimiento ")
+    print("9- Identificacion de bicicletas para mantenimiento ")
+    print(" ")
     print("0- Salir")
     print("*******************************************")
 
@@ -148,15 +148,12 @@ def optionEight():
 
 
 def optionNine():
-    woow= controller.identifyforpublicity(cont)
+    woow=controller.bonito(cont,identificador)
+    print('Las estaciones visitadas por esta bicicleta son : ')
+    print(woow[0])
+    print('Tiempo total de uso : ' + str(woow[1]//60)+ ' minutos.')
 
-    print(woow)
 
-
-def optionTen():
-    woow=controller.identifybikesformaintenance(cont,identificador,fecha)
-
-    print(woow)
 """
 Menu principal
 """
@@ -213,15 +210,9 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 9:
+        identificador= int(input('Ingresa el identificador de la bici: '))
         executiontime = timeit.timeit(optionNine, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
-    
-    elif int(inputs[0]) == 10:
-        identificador= int(input('Ingresa el límite inferior de tu edad: '))
-        fecha= input('Ingresa el límite superior de tu edad: ')
-        executiontime = timeit.timeit(optionTen, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
 
     else:
         sys.exit(0)

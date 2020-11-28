@@ -95,7 +95,11 @@ def newAnalyzer():
                                               comparefunction=compareStopIds)
         analyzer['nameverteces'] = m.newMap(numelements=10000,
                                      maptype='PROBING',
-                                     comparefunction=compareStopIds)                                              
+                                     comparefunction=compareStopIds) 
+        analyzer['bikeid'] = m.newMap(numelements=1000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds) 
+                                                     
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -117,6 +121,7 @@ def addTrip(citibike, trip):
         duration = int(trip['tripduration'])
         name=trip["start station name"]
         year=int(trip['birth year'])
+        identificador= int(trip['bikeid'])
         if not (origin==destination):
             addStation(citibike, origin)
             addCoordinates(citibike,oname,origin,olatitude,olongitude)
@@ -127,6 +132,7 @@ def addTrip(citibike, trip):
             addConnection(citibike, origin, destination, duration)
             addnametrip(citibike,origin,name)
             addnametrip(citibike,destination,name)
+            addBikeID(citibike,identificador,oname,dname,duration,)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
 
@@ -148,18 +154,20 @@ def addnametrip(citybike,viaje,name):
 
 
 
-def addBikeID(citibike, identificador, fecha, hora, desde, hasta):
+def addBikeID(citibike, identificador, vertexA , vertexB, weight,):
     """
     Crea '
     """
-    if m.contains(citibike['bikehistorial'],fecha):
-        hashmin=m.get(citibike['bikehistorial'],fecha)['value']
-        hashmin.put(fecha,(desde,hasta))
-        citibike['bikehistorial'].put(identificador,hashmin)
+    if m.contains(citibike['bikeid'],identificador):        
+        value= m.get(citibike['bikeid'],identificador)['value']
+        if vertexA not in value['vertices']:
+            value['vertices'].append(vertexA)
+        if vertexB not in value['vertices']:
+            value['vertices'].append(vertexB)
+        value['time'] += weight
     else:
-        hashmin=m.newMap(numelements=10000,maptype='PROBING',comparefunction=compareStopIds)
-        hashmin.put(fecha,(desde,hasta))
-        citibike['bikehistorial'].put(identificador,hashmin)
+        value= {'vertices':[vertexA,vertexB],'time':weight,}
+        m.put(citibike['bikeid'],identificador,value)
     return citibike
 
 def addRankingstart(citibike,vertex,year):
@@ -327,11 +335,22 @@ def requerimiento_6(analyzer,la1, lo1, la2, lo2):
     except Exception as exp:
         error.reraise(exp, 'model;Req_6')
 
+def bonito(analyzer,bikeid):
+    try:
+        data= m.get(analyzer['bikeid'],bikeid)['value']
+        return data['vertices'],data['time']
+    except Exception as exp:
+        error.reraise(exp, 'model;Fallo en el bono')
+
+
+
 def poner_bonita_la_ruta(analyzer,arco):
     vertexA= m.get(analyzer['coordinates'],arco['vertexA'])['value']['name']
     vertexB= m.get(analyzer['coordinates_destiny'],arco['vertexB'])['value']['name']
     hola= {'From':vertexA,'To':vertexB,'duracion en minutos':arco['weight']}
     return hola
+
+
 def minor_distance_to(map,lat,lon):
     size= m.size(map)
     lista= m.keySet(map)
