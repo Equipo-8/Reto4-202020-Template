@@ -139,3 +139,9 @@ def requerimiento_6(analyzer,la1,lo1,la2,lo2):
 
 for i in range(1,2):
     print(i)
+
+def sccGraph(graph,limit,limit2,vertex):
+    return model.req2(graph['connections'],limit*60,limit2*60,vertex)
+
+def recomendadorRutas(graph,limit,limit2):
+    return model.recomendadorRutas(graph,limit,limit2)

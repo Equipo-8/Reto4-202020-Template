@@ -93,15 +93,22 @@ def optionThree():
 
 
 def optionFour():
-    asd = controller.sccGraph(cont)
-    print(asd)
+    asd = controller.sccGraph(cont,range_time,range_time2,idstart)
+    if len(asd)>0:
+        for each in asd:
+            print("\n")
+            print("Resultados: \n")
+            print("La primera estación que debes tomar después de la estación "+idstart+" es: "+each['First'])
+            print("La última estación a la cuál debes llegar antes de volver al inicio es: "+each['Last'])
+            print("Esta opción de ruta durará: "+str(round(each['Duracion'],2))+" minutos")
+            print("\n")
+    else:
+        print("No existen recomendaciones con los parámetros brindados")
 
 
 
 def optionFive():
-    haspath = controller.getCriticalStations(cont, destStation)
-    print('Las estaciones criticas son las siguientes : ')
-    print(haspath)
+    papu=":v?"
 
 
 def optionSix():
@@ -115,9 +122,19 @@ def optionSix():
 
 
 def optionSeven():
-    maxvert, maxdeg = controller.recomendPaths(cont)
-    print('Estación: ' + maxvert + '  Total rutas servidas: '
-          + str(maxdeg))
+    haspath = controller.recomendadorRutas(cont, range_age,range_age2)
+    if len(haspath)> 0:
+        dtotal=0
+        for each in haspath:
+            dtotal+=each['Duracion']
+            print("\n")
+            print("Resultado: \n")
+            print("Inicia en: "+each['Desde'])
+            print("Termina en: "+each['Hasta'])
+            print("Tardarás: "+str(round(each['Duracion'],2))+" minutos")
+        print("En total tardarás: "+str(round(dtotal,2))+" minutos")
+    else:
+        "En este rango de edad no te podemos brindar una recomendación"
 
 def optionEight():
     woow= controller.requerimiento_6(cont,la1,lo1,la2,lo2)
@@ -163,12 +180,14 @@ while True:
 
     elif int(inputs[0]) == 4:
         idstart= input('Ingrese el identificador de la estacion de inicio :')
-        range_time= input('Ingrese el rango de tiempo disponible en minutos (Ej: 120-180) ')
+        range_time= int(input('Ingresa el límite inferior de tu disponibilidad de tiempo: '))
+        range_time2= int(input('Ingresa el límite superior de tu disponibilidad de tiempo: '))
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
-        destStation = input("Estación destino (Ej: 15151-10): ")
+        range_agdde= int(input('Ingresa el límite inferior de tu edad: '))
+        range_agdde2= int(input('Ingresa el límite superior de tu edad: '))
         executiontime = timeit.timeit(optionFive, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -179,6 +198,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 7:
+        range_age= int(input('Ingresa el límite inferior de tu edad: '))
+        range_age2= int(input('Ingresa el límite superior de tu edad: '))
         executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
