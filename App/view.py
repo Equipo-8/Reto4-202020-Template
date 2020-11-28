@@ -120,6 +120,7 @@ def optionSix():
             print(path[i])
             print('')
 
+
 def optionSeven():
     haspath = controller.recomendadorRutas(cont, range_age,range_age2)
     if len(haspath)> 0:
@@ -145,6 +146,7 @@ def optionEight():
     print(woow[3])
     print(woow[4])
 
+    print(woow[5])
 
 
 def optionNine():
@@ -154,7 +156,7 @@ def optionNine():
 
 
 def optionTen():
-    woow= controller.identifybikesformaintenance(cont)
+    woow=controller.identifybikesformaintenance(cont,identificador,fecha)
 
     print(woow)
 """
@@ -195,6 +197,7 @@ while True:
     elif int(inputs[0]) == 6:
         station = input("Estación inicial (Ej: 15151-10): ")
         resistance = int(input("Ingrese su resistencia en minutos : "))
+        resistance = int(input("cuanto aguantas bro???? : "))
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -209,6 +212,10 @@ while True:
         lo1= float(input('Ingrese la longitud de su ubicacion actual : '))
         la2= float(input('Ingrese la latitud de su lugar de destino : '))
         lo2= float(input('Ingrese la longitud de su lugar de destino : '))
+        la1= input('Ingrese la latitud de su ubicacion actual : ')
+        lo1= input('Ingrese la longitud de su ubicacion actual : ')
+        la2= input('Ingrese la latitud de su lugar de destino : ')
+        lo2= input('Ingrese la longitud de su lugar de destino : ')
         executiontime = timeit.timeit(optionEight, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -217,6 +224,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
     
     elif int(inputs[0]) == 10:
+        identificador= int(input('Ingresa el límite inferior de tu edad: '))
+        fecha= input('Ingresa el límite superior de tu edad: ')
         executiontime = timeit.timeit(optionTen, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
