@@ -68,7 +68,9 @@ def newAnalyzer():
                     'connections': None,
                     'components': None,
                     'paths': None,
-                    'nameverteces':None
+                    'nameverteces':None,
+                    'countllegada':None,
+                    'countsalida':None
                     }
 
         analyzer['stops'] = m.newMap(numelements=14000,
@@ -84,7 +86,12 @@ def newAnalyzer():
         analyzer['agestartrank'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
-
+        analyzer['countllegada'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+        analyzer['countsalida'] = m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
         analyzer['agefinishrank'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
@@ -243,7 +250,9 @@ def req2(grafo,limiteinf,limite,verticei):
                     rutasposibles.append({"First":lt.firstElement(rutachikita),"Last":lt.lastElement(rutachikita),"Duracion":tiempo/60})
         
     return rutasposibles
-    
+
+def req3(analizador):
+    return "XD"
 
 def recomendadorRutas(analizador,limiteinf,limitesup):
     listvertices=gr.vertices(analizador['connections'])
@@ -282,6 +291,7 @@ def recomendadorRutas(analizador,limiteinf,limitesup):
 def requerimiento_4(analyzer,station,resistance):
 
     try:
+        resistance=resistance*60
         recorrido= bfs.BreadhtFisrtSearch(analyzer['connections'],station)
         size= gr.numVertices(analyzer['connections'])
         vertexxx= gr.vertices(analyzer['connections'])

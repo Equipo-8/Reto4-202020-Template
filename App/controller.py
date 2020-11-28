@@ -128,8 +128,6 @@ def connectedSCC(analyzer):
     return model.numSCC(analyzer['connections'],analyzer) 
 def searchSCC(analyzer,st1,st2):
     return model.sameCC(analyzer, st1, st2)
-def sccGraph(graph):
-    return model.rutacircular(graph['connections'])
 
 def resistance_paths(analyzer,station,resistance):
     return model.requerimiento_4(analyzer,station,resistance)
@@ -146,5 +144,6 @@ def recomendadorRutas(graph,limit,limit2):
 
 def identifybikesformaintenance(cont,identificador,fecha):
     return model.identifybikesformaintenance(cont,identificador,fecha)
+    
 def estacionescirticas(citibike,trip):
     return model.req3(citibike,trip)
