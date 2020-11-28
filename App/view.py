@@ -146,8 +146,6 @@ def optionEight():
     print(woow[3])
     print(woow[4])
 
-    print(woow[5])
-
 
 def optionNine():
     woow= controller.identifyforpublicity(cont)
@@ -197,7 +195,6 @@ while True:
     elif int(inputs[0]) == 6:
         station = input("Estación inicial (Ej: 15151-10): ")
         resistance = int(input("Ingrese su resistencia en minutos : "))
-        resistance = int(input("cuanto aguantas bro???? : "))
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -212,10 +209,6 @@ while True:
         lo1= float(input('Ingrese la longitud de su ubicacion actual : '))
         la2= float(input('Ingrese la latitud de su lugar de destino : '))
         lo2= float(input('Ingrese la longitud de su lugar de destino : '))
-        la1= input('Ingrese la latitud de su ubicacion actual : ')
-        lo1= input('Ingrese la longitud de su ubicacion actual : ')
-        la2= input('Ingrese la latitud de su lugar de destino : ')
-        lo2= input('Ingrese la longitud de su lugar de destino : ')
         executiontime = timeit.timeit(optionEight, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
