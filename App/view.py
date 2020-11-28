@@ -43,7 +43,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-bikefile = '201801-1-citibike-tripdata.csv'
+bikefile = '201801-2-citibike-tripdata.csv'
 initialStation = 0
 
 recursionLimit = 20000
@@ -112,16 +112,13 @@ def optionFive():
 
 
 def optionSix():
-    path = controller.HowMuchYouCanRide(cont, destStation)
-    if path is not None:
-        pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
-        while (not stack.isEmpty(path)):
-            stop = stack.pop(path)
-            print(stop)
-    else:
-        print('No hay camino')
-
+    path = controller.resistance_paths(cont, station, resistance)
+    print('Los caminos posibles son :')
+    for i in path.keys():
+        if path[i] is not None :
+            print('Hacia '+str(i)+'= ')
+            print(path[i])
+            print('')
 
 def optionSeven():
     haspath = controller.recomendadorRutas(cont, range_age,range_age2)
@@ -139,9 +136,15 @@ def optionSeven():
         "En este rango de edad no te podemos brindar una recomendación"
 
 def optionEight():
-    woow= controller.amazingPlace(cont)
+    woow= controller.requerimiento_6(cont,la1,lo1,la2,lo2)
+    print('')
+    print('')
+    print(woow[0])
+    print(woow[1])
+    print(woow[2])
+    print(woow[3])
+    print(woow[4])
 
-    print(woow)
 
 
 def optionNine():
@@ -190,7 +193,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
-        destStation = input("Estación destino (Ej: 15151-10): ")
+        station = input("Estación inicial (Ej: 15151-10): ")
+        resistance = int(input("Ingrese su resistencia en minutos : "))
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -201,6 +205,10 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 8:
+        la1= float(input('Ingrese la latitud de su ubicacion actual : '))
+        lo1= float(input('Ingrese la longitud de su ubicacion actual : '))
+        la2= float(input('Ingrese la latitud de su lugar de destino : '))
+        lo2= float(input('Ingrese la longitud de su lugar de destino : '))
         executiontime = timeit.timeit(optionEight, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

@@ -134,3 +134,11 @@ def sccGraph(graph,limit,limit2,vertex):
 
 def recomendadorRutas(graph,limit,limit2):
     return model.recomendadorRutas(graph,limit,limit2)
+
+def resistance_paths(analyzer,station,resistance):
+    return model.requerimiento_4(analyzer,station,resistance)
+
+def requerimiento_6(analyzer,la1,lo1,la2,lo2):
+    return model.requerimiento_6(analyzer,la1,lo1,la2,lo2)
+
+

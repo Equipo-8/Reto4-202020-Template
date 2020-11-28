@@ -25,13 +25,16 @@
  """
 import config
 import datetime
+import math
 from DISClib.ADT.graph import gr
+from DISClib.ADT import stack as st
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import stack
 from DISClib.DataStructures import graphstructure as gs
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import bfs
 from DISClib.Algorithms.Graphs import dfs
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
@@ -67,6 +70,12 @@ def newAnalyzer():
         analyzer['stops'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
+        analyzer['coordinates']= m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+        analyzer['coordinates_destiny']= m.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
 
         analyzer['agestartrank'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
@@ -91,17 +100,35 @@ def newAnalyzer():
 def addTrip(citibike, trip):
     try:
         origin=trip['start station id']
+        olatitude= trip['start station latitude']
+        olongitude= trip["start station longitude"]
+        oname= trip["start station name"]
         destination = trip['end station id']
+        dlatitude= trip['end station latitude']
+        dlongitude= trip["end station longitude"]
+        dname= trip["end station name"]
         duration = int(trip['tripduration'])
         year=int(trip['birth year'])
         if not (origin==destination):
             addStation(citibike, origin)
+            addCoordinates(citibike,oname,origin,olatitude,olongitude)
             addStation(citibike, destination)
+            addCoordinates_destiny(citibike,dname,destination,dlatitude,dlongitude)
             addRankingstart(citibike,origin,year)
             addRankingfinish(citibike,destination,year)
             addConnection(citibike, origin, destination, duration)
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
+
+def addCoordinates(citibike,name,origin,latitude,longitude):
+    if not m.contains(citibike['coordinates'],origin):
+        m.put(citibike['coordinates'],origin,{'name': name, 'latitude': latitude, 'longitude':longitude})
+    return citibike
+
+def addCoordinates_destiny(citibike,name,origin,latitude,longitude):
+    if not m.contains(citibike['coordinates_destiny'],origin):
+        m.put(citibike['coordinates_destiny'],origin,{'name': name, 'latitude': latitude, 'longitude':longitude})
+    return citibike
 def addRankingstart(citibike,vertex,year):
     now=datetime.datetime.now()
     age=int(now.year)-year
@@ -210,6 +237,86 @@ def recomendadorRutas(analizador,limiteinf,limitesup):
             ruta.append({'Desde':informacion['vertexA'],'Hasta':informacion['vertexB'],'Duracion':informacion['weight']/60})
     return ruta
 
+def requerimiento_4(analyzer,station,resistance):
+
+    try:
+        recorrido= bfs.BreadhtFisrtSearch(analyzer['connections'],station)
+        size= gr.numVertices(analyzer['connections'])
+        vertexxx= gr.vertices(analyzer['connections'])
+        dicc= {}
+        for i in range(1,size):
+            vertice= lt.getElement(vertexxx,i)
+            if bfs.hasPathTo(recorrido,vertice):
+                path= bfs.pathTo(recorrido,vertice)
+                sizep= st.size(path)
+                if sizep != 1 :
+                    init= st.pop(path)
+                    summ= 0
+                    dicc[str(vertice)]= []
+                    while sizep >= 2:
+                        vertex2= st.pop(path)
+                        if vertex2 is None :
+                            break
+                        arco= gr.getEdge(analyzer['connections'],init,vertex2)
+                        summ+= arco['weight']
+                        init= vertex2
+                        if summ > resistance :
+                            dicc[str(vertice)]= None
+                        else: 
+                            dicc[str(vertice)].append(arco)
+        return dicc
+    except Exception as exp:
+        error.reraise(exp, 'model;Req_4')
+
+
+def requerimiento_6(analyzer,la1, lo1, la2, lo2):
+    try:
+        start= minor_distance_to(analyzer['coordinates'],la1,lo1)
+        end= minor_distance_to(analyzer['coordinates_destiny'],la2,lo2)
+        init= start[0]
+        des= end[0]
+        search= djk.Dijkstra(analyzer['connections'],init)
+        path= djk.pathTo(search,des)
+        time= 0
+        if path is not None :
+            rutaa= []
+            while not st.isEmpty(path) :
+                element= st.pop(path)
+                rutaa.append(element)
+                time+= element['weight']
+            p1='La estacion mas cercana a donde usted se encuentra en este momento es : ' + start[1]
+            p2='La estacion mas cercana a su destino es : ' + end[1]
+            p3='El camino mas corto entre estas dos estaciones es : '
+            p4='El tiempo estimado para realizar esta ruta es : ' + str(time) + ' minutos'
+            return p1,p2,p3,rutaa,p4
+    except Exception as exp:
+        error.reraise(exp, 'model;Req_6')
+
+def minor_distance_to(map,lat,lon):
+    size= m.size(map)
+    lista= m.keySet(map)
+    minimo= 0
+    vertex= None
+    name= None
+    for i in range(0,size):
+        key= lt.getElement(lista,i)
+        element= m.get(map,key)
+        lat2= float(element['value']['latitude'])
+        lon2= float(element['value']['longitude'])
+        distance= get_distance(lat,lon,lat2,lon2)
+        if i==0:
+            minimo= distance
+            vertex= key
+            name= element['value']['name']
+        else:
+            if distance < minimo :
+                minimo= distance
+                vertex= key
+                name= element['value']['name']
+    return vertex,name
+
+
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -288,6 +395,19 @@ def servedRoutes(analyzer):
 # ==============================
 # Funciones Helper
 # ==============================
+
+def get_distance(lat1,lon1,lat2,lon2):
+    R= 6373.0
+    lat1= math.radians(lat1)
+    lat2= math.radians(lat2)
+    lon1= math.radians(lon1)
+    lon2= math.radians(lon2)
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance= R * c
+    return distance
 
 # ==============================
 # Funciones de Comparacion
