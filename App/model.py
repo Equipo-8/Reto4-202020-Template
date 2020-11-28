@@ -279,14 +279,15 @@ def requerimiento_4(analyzer,station,resistance):
         vertexxx= gr.vertices(analyzer['connections'])
         dicc= {}
         for i in range(1,size):
-            vertice= lt.getElement(vertexxx,i)
-            if bfs.hasPathTo(recorrido,vertice):
-                path= bfs.pathTo(recorrido,vertice)
+            ids= lt.getElement(vertexxx,i)
+            vertice= m.get(analyzer['coordinates_destiny'],ids)['value']['name']
+            if bfs.hasPathTo(recorrido,ids):
+                path= bfs.pathTo(recorrido,ids)
                 sizep= st.size(path)
                 if sizep != 1 :
                     init= st.pop(path)
                     summ= 0
-                    dicc[str(vertice)]= []
+                    dicc[vertice]= []
                     while sizep >= 2:
                         vertex2= st.pop(path)
                         if vertex2 is None :
@@ -297,7 +298,7 @@ def requerimiento_4(analyzer,station,resistance):
                         if summ > resistance :
                             dicc[str(vertice)]= None
                         else: 
-                            dicc[str(vertice)].append(arco)
+                            dicc[str(vertice)].append(poner_bonita_la_ruta(analyzer,arco))
         return dicc
     except Exception as exp:
         error.reraise(exp, 'model;Req_4')
@@ -316,7 +317,7 @@ def requerimiento_6(analyzer,la1, lo1, la2, lo2):
             rutaa= []
             while not st.isEmpty(path) :
                 element= st.pop(path)
-                rutaa.append(element)
+                rutaa.append(poner_bonita_la_ruta(analyzer,element))
                 time+= element['weight']
             p1='La estacion mas cercana a donde usted se encuentra en este momento es : ' + start[1]
             p2='La estacion mas cercana a su destino es : ' + end[1]
@@ -326,6 +327,11 @@ def requerimiento_6(analyzer,la1, lo1, la2, lo2):
     except Exception as exp:
         error.reraise(exp, 'model;Req_6')
 
+def poner_bonita_la_ruta(analyzer,arco):
+    vertexA= m.get(analyzer['coordinates'],arco['vertexA'])['value']['name']
+    vertexB= m.get(analyzer['coordinates_destiny'],arco['vertexB'])['value']['name']
+    hola= {'From':vertexA,'To':vertexB,'duracion en minutos':arco['weight']}
+    return hola
 def minor_distance_to(map,lat,lon):
     size= m.size(map)
     lista= m.keySet(map)
